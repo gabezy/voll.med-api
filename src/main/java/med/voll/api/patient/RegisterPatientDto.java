@@ -5,9 +5,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import med.voll.api.address.DataAddress;
+import med.voll.api.address.AddressDto;
 
-public record DataRegisterPatient(
+public record RegisterPatientDto(
         @NotBlank
         String name,
 
@@ -22,4 +22,4 @@ public record DataRegisterPatient(
 
         @NotNull
         @Valid
-        DataAddress address) {}
+        AddressDto address) {}

@@ -25,6 +25,8 @@ The following guides illustrate how to use some features concretely:
   - @PutMapping - HTTP Put method
   - @DeleteMapping - HTTP Delete method
   - @PatchMapping - HTTP Patch method
+- @Transactional annotation - tells spring that the method can write on the DB 
+
 
 ### Enable different origins on Spring Boot
 Create a `CrosConfiguration` class implementing the `WebMvcConfigurer`passing the addMapping (url), allowedOrigins and allowedMethods.@
@@ -50,3 +52,7 @@ public class CorsConfiguration implements WebMvcConfigurer {
       password: root
 
 ```
+#### Change the default parameters names
+spring.data.web.pageable.page-parameter=pagina<br>
+spring.data.web.pageable.size-parameter=tamanho<br>
+spring.data.web.sort.sort-parameter=ordem

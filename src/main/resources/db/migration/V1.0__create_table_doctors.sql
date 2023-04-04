@@ -1,15 +1,17 @@
 CREATE TABLE doctors (
-    id VARCHAR(36) NOT NULL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    crm VARCHAR(6) NOT NULL,
-    phone VARCHAR(20) NOT NULL,
-    specialty VARCHAR(100) NOT NULL,
-    logradouro VARCHAR(100) NOT NULL,
-    bairro VARCHAR(100) NOT NULL,
-    cep VARCHAR(9) NOT NULL,
-    cidade VARCHAR(100) NOT NULL,
-    uf CHAR(2) NOT NULL,
-    numero VARCHAR(20),
-    complemento VARCHAR(100),
-)
+     id varchar(36) not null,
+     name varchar(100) not null,
+     email varchar(100) not null unique,
+     phone varchar(15) not null,
+     crm varchar(6) not null unique,
+     specialty varchar(100) not null,
+     logradouro varchar(100) not null,
+     bairro varchar(100) not null,
+     cep varchar(9) not null,
+     complemento varchar(100),
+     numero varchar(20),
+     uf char(2) not null,
+     cidade varchar(100) not null,
+
+     primary key(id)
+);

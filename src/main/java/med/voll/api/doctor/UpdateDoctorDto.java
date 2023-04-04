@@ -1,8 +1,8 @@
-package med.voll.api.patient;
+package med.voll.api.doctor;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import med.voll.api.address.AddressDto;
+import med.voll.api.address.UpdateAddressDto;
 
 public record UpdateDoctorDto(
         @NotBlank
@@ -10,4 +10,4 @@ public record UpdateDoctorDto(
         String name,
         String phone,
         @Valid
-        AddressDto address) {}
+        UpdateAddressDto address) {}

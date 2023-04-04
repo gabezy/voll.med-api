@@ -1,11 +1,9 @@
 package med.voll.api.doctor;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import med.voll.api.address.Address;
+import med.voll.api.address.util.CheckBody;
 
 @Entity
 @Table(name = "doctors")
@@ -13,6 +11,7 @@ import med.voll.api.address.Address;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
+@ToString
 public class Doctor {
 
     @Id
@@ -33,7 +32,7 @@ public class Doctor {
     @Embedded
     private Address address;
 
-    public Doctor(DataRegisterDoctor data) {
+    public Doctor(RegisterDoctorDto data) {
         this.name = data.name();
         this.email = data.email();
         this.phone = data.phone();
@@ -41,4 +40,18 @@ public class Doctor {
         this.specialty = data.specialty();
         this.address = new Address(data.address());
     }
+
+    public void update(UpdateDoctorDto data) {
+        if (!CheckBody.isNullOrEmpty(data.name())) {
+            this.name = data.name();
+        }
+        if (!CheckBody.isNullOrEmpty(data.phone())) {
+            this.phone = data.phone();
+        }
+        if (data.address() != null) {
+           this.address.update(data.address());
+        }
+    }
+
+
 }
