@@ -3,23 +3,24 @@ package med.voll.api.controller;
 import jakarta.transaction.Transactional;
 import med.voll.api.appointment.Appointment;
 import med.voll.api.appointment.AppointmentRepository;
+import med.voll.api.appointment.CancellationAppointmentDto;
 import med.voll.api.appointment.RegisterAppointmentDto;
 import med.voll.api.doctor.Doctor;
 import med.voll.api.doctor.DoctorRepository;
 import med.voll.api.patient.PatientRepository;
+import med.voll.api.util.DateTimeUtil;
 import med.voll.api.util.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/appointments")
@@ -38,6 +39,10 @@ public class AppointmentController {
     public ResponseEntity<String> register(@RequestBody RegisterAppointmentDto data) {
         Doctor doctor = null;
         LocalDateTime appointmentDateTime = LocalDateTime.parse(data.date());
+        if (!DateTimeUtil.isAppointmentDateValid(appointmentDateTime)) {
+            return ResponseEntity.status(409).body("Invalid Date");
+
+        }
 
         if (Validation.isNullOrEmpty(data.doctorId())) {
             List<Doctor> avalibleDoctorList = null;
@@ -63,23 +68,41 @@ public class AppointmentController {
             boolean doctorHasAppointmentInTheTime = false;
 
             List<Appointment> doctorAppointments = repository.findAppointmentByDoctorId(data.doctorId());
-            if (Validation.doctorHasAppointmentInTheTime(doctorAppointments, appointmentDateTime)) {
+            if (DateTimeUtil.doctorHasAppointmentInTheTime(doctorAppointments, appointmentDateTime)) {
                 doctorHasAppointmentInTheTime = true;
             }
 
-            if (doctorHasAppointmentInTheTime) return ResponseEntity.status(409).body("The doctor already has a appointment in this time");
+            if (doctorHasAppointmentInTheTime) {
+                return ResponseEntity.status(409).body("The doctor already has a appointment in this time");
+            }
 
 
         }
         var patient = patientRepository.getReferenceById(data.patientId());
         List<Appointment> patientAppointments = repository.findAppointmentByPatientId(data.patientId());
-        boolean patientHasAppointmentInTheSameDay = Validation.patientHasAppointmentInTheSameDay(patientAppointments,
+        boolean patientHasAppointmentInTheSameDay = DateTimeUtil.patientHasAppointmentInTheSameDay(patientAppointments,
                 appointmentDateTime);
 
         if (patientHasAppointmentInTheSameDay) return ResponseEntity.status(409).body("The same patient can't reserve the two or more appointments in this day");
 
         repository.save(new Appointment(patient, doctor, data.date()));
         return ResponseEntity.status(HttpStatus.CREATED).body("");
+    }
+
+    @GetMapping
+    public Page<CancellationAppointmentDto> list(@PageableDefault(size = 20)Pageable pageable) {
+        return repository.findAppointmentCancellationReasonNull(pageable).map(CancellationAppointmentDto::new);
+    }
+
+    @PutMapping
+    @Transactional
+    public ResponseEntity<String> cancel(@RequestBody CancellationAppointmentDto data) {
+        var appointment = repository.getReferenceById(data.id());
+        if (!DateTimeUtil.isCancellationRequestDateAtLeast24HourEarlierThanTheAppointment(appointment.getDate())) {
+            return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body("the cancellation of an appointment can only be made at least 24 hours before the appointment");
+        }
+
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("");
     }
 
 
