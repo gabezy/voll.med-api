@@ -4,7 +4,7 @@ import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import med.voll.api.address.util.CheckBody;
+import med.voll.api.util.Validation;
 
 @Embeddable
 @Getter
@@ -30,25 +30,25 @@ public class Address {
     }
 
     public void update(UpdateAddressDto data) {
-        if (!CheckBody.isNullOrEmpty(data.logradouro())) {
+        if (!Validation.isNullOrEmpty(data.logradouro())) {
             this.logradouro = data.logradouro();
         }
-        if (!CheckBody.isNullOrEmpty(data.bairro())) {
+        if (!Validation.isNullOrEmpty(data.bairro())) {
             this.bairro = data.bairro();
         }
-        if (!CheckBody.isNullOrEmpty(data.cep())) {
+        if (!Validation.isNullOrEmpty(data.cep())) {
             this.cep = data.cep();
         }
-        if (!CheckBody.isNullOrEmpty(data.cidade())) {
+        if (!Validation.isNullOrEmpty(data.cidade())) {
             this.cidade = data.cidade();
         }
-        if (!CheckBody.isNullOrEmpty(data.uf())) {
+        if (!Validation.isNullOrEmpty(data.uf())) {
             this.uf = data.uf();
         }
-        if (!CheckBody.isNullOrEmpty(data.numero())) {
+        if (!Validation.isNullOrEmpty(data.numero())) {
             this.numero = data.numero();
         }
-        if (!CheckBody.isNullOrEmpty(data.complemento())) {
+        if (!Validation.isNullOrEmpty(data.complemento())) {
             this.complemento = data.complemento();
         }
     }

@@ -1,13 +1,9 @@
 package med.voll.api.patient;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import med.voll.api.address.Address;
-import med.voll.api.address.util.CheckBody;
-import med.voll.api.doctor.UpdateDoctorDto;
+import med.voll.api.util.Validation;
 
 @Entity
 @Table(name = "patients")
@@ -15,6 +11,7 @@ import med.voll.api.doctor.UpdateDoctorDto;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
+@ToString
 public class Patient {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,7 +30,10 @@ public class Patient {
     @Embedded
     private Address address;
 
+    private boolean active;
+
     public Patient(RegisterPatientDto data) {
+        this.active = true;
         name = data.name();
         email = data.email();
         phone = data.phone();
@@ -42,15 +42,23 @@ public class Patient {
     }
 
     public void update(UpdatePatientDto data) {
-        if (!CheckBody.isNullOrEmpty(data.name())) {
+        if (!Validation.isNullOrEmpty(data.name())) {
             this.name = data.name();
         }
-        if (!CheckBody.isNullOrEmpty(data.phone())) {
+        if (!Validation.isNullOrEmpty(data.phone())) {
             this.phone = data.phone();
         }
         if (data.address() != null) {
             this.address.update(data.address());
         }
+    }
+
+    public void delete() {
+        this.active = false;
+    }
+
+    public void activate() {
+        this.active = true;
     }
 
 }

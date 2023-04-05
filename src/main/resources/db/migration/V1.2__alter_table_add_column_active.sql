@@ -1,0 +1,2 @@
+ALTER TABLE doctors ADD COLUMN active TINYINT DEFAULT 1;
+UPDATE doctors SET active = 1;

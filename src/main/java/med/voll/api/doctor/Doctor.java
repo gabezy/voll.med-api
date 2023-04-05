@@ -3,7 +3,7 @@ package med.voll.api.doctor;
 import jakarta.persistence.*;
 import lombok.*;
 import med.voll.api.address.Address;
-import med.voll.api.address.util.CheckBody;
+import med.voll.api.util.Validation;
 
 @Entity
 @Table(name = "doctors")
@@ -32,7 +32,10 @@ public class Doctor {
     @Embedded
     private Address address;
 
+    private boolean active;
+
     public Doctor(RegisterDoctorDto data) {
+        this.active = true;
         this.name = data.name();
         this.email = data.email();
         this.phone = data.phone();
@@ -42,10 +45,10 @@ public class Doctor {
     }
 
     public void update(UpdateDoctorDto data) {
-        if (!CheckBody.isNullOrEmpty(data.name())) {
+        if (!Validation.isNullOrEmpty(data.name())) {
             this.name = data.name();
         }
-        if (!CheckBody.isNullOrEmpty(data.phone())) {
+        if (!Validation.isNullOrEmpty(data.phone())) {
             this.phone = data.phone();
         }
         if (data.address() != null) {
@@ -54,4 +57,12 @@ public class Doctor {
     }
 
 
+    public void delete() {
+        this.active = false;
+    }
+
+
+    public void activate() {
+        this.active = true;
+    }
 }

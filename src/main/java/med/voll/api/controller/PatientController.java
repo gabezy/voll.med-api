@@ -2,6 +2,9 @@ package med.voll.api.controller;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import med.voll.api.doctor.UpdateDoctorDto;
 import med.voll.api.patient.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/patients")
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class PatientController {
 
     @Autowired
@@ -25,7 +33,8 @@ public class PatientController {
 
     @GetMapping
     public Page<ListPatientDto> list(@PageableDefault(size = 10, sort = {"name"}) Pageable pageable) {
-        return this.repository.findAll(pageable).map(ListPatientDto::new);
+        System.out.println(LocalDateTime.now());
+        return this.repository.findAllByActiveTrue(pageable).map(ListPatientDto::new);
     }
 
     @PutMapping
@@ -34,4 +43,19 @@ public class PatientController {
         var patient = repository.getReferenceById(data.id());
         patient.update(data);
     }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public void delete(@PathVariable String id) {
+        var patient = repository.getReferenceById(id);
+        patient.delete();
+    }
+
+    @PatchMapping("/{id}/activate")
+    @Transactional
+    public void activate(@PathVariable String id) {
+        var patient = repository.getReferenceById(id);
+        patient.activate();
+    }
+
 }
