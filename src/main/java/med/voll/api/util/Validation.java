@@ -54,8 +54,9 @@ public class Validation {
         // TODO: extends function to check if the appointmentDateTime is between the 1 hour after gap
         boolean appointmentInSameTime = false;
         for (Appointment appointment : appointmentList) {
-            LocalDateTime date = appointment.getDate();
-            if (appointmentDateTime.isEqual(date)) {
+            LocalDateTime startDateTime = appointment.getDate();
+            LocalDateTime endDateTime = startDateTime.plusHours(1);
+            if (appointmentDateTime.isAfter(startDateTime) && appointmentDateTime.isBefore(endDateTime)) {
                 appointmentInSameTime = true;
                 break;
             }
