@@ -1,6 +1,6 @@
 package med.voll.api.util;
 
-import med.voll.api.appointment.Appointment;
+import med.voll.api.domain.appointment.Appointment;
 
 import java.time.Duration;
 import java.time.LocalDate;

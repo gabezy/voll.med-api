@@ -1,15 +1,15 @@
 package med.voll.api.controller;
 
 import jakarta.transaction.Transactional;
-import med.voll.api.appointment.Appointment;
-import med.voll.api.appointment.AppointmentRepository;
-import med.voll.api.appointment.CancellationAppointmentDto;
-import med.voll.api.appointment.RegisterAppointmentDto;
-import med.voll.api.doctor.Doctor;
-import med.voll.api.doctor.DoctorRepository;
-import med.voll.api.patient.PatientRepository;
+import jakarta.validation.Valid;
+import med.voll.api.domain.appointment.*;
+import med.voll.api.domain.doctor.Doctor;
+import med.voll.api.domain.doctor.DoctorRepository;
+import med.voll.api.domain.patient.PatientRepository;
+import med.voll.api.infra.exception.InvalidAppointmentDateException;
+import med.voll.api.infra.exception.PatientBookTwoAppointmentsInTheSameDayException;
 import med.voll.api.util.DateTimeUtil;
-import med.voll.api.util.Validation;
+import med.voll.api.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +17,9 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
@@ -36,15 +38,16 @@ public class AppointmentController {
     @PostMapping
     @Transactional
     // ResponseEntity<String>
-    public ResponseEntity<String> register(@RequestBody RegisterAppointmentDto data) {
+    public ResponseEntity<DetailAppointmentDto> register(@RequestBody @Valid RegisterAppointmentDto data, UriComponentsBuilder builder) {
+        //  TODO: create URI for the new appointment and return the appointment created in the response body
+
         Doctor doctor = null;
         LocalDateTime appointmentDateTime = LocalDateTime.parse(data.date());
         if (!DateTimeUtil.isAppointmentDateValid(appointmentDateTime)) {
-            return ResponseEntity.status(409).body("Invalid Date");
-
+            throw new InvalidAppointmentDateException();
         }
 
-        if (Validation.isNullOrEmpty(data.doctorId())) {
+        if (ValidationUtil.isNullOrEmpty(data.doctorId())) {
             List<Doctor> avalibleDoctorList = null;
             List<Appointment> appointmentList = repository.findAppointmentByDate(appointmentDateTime);
             if (appointmentList.size() > 0) {
@@ -61,21 +64,13 @@ public class AppointmentController {
             Random random = new Random();
             int randomNumber = random.nextInt(avalibleDoctorList.size());
             doctor = avalibleDoctorList.get(randomNumber);
-            System.out.println(doctor.getId());
-
         } else {
             doctor = doctorRepository.getReferenceById(data.doctorId());
-            boolean doctorHasAppointmentInTheTime = false;
 
             List<Appointment> doctorAppointments = repository.findAppointmentByDoctorId(data.doctorId());
             if (DateTimeUtil.doctorHasAppointmentInTheTime(doctorAppointments, appointmentDateTime)) {
-                doctorHasAppointmentInTheTime = true;
+                throw new InvalidAppointmentDateException();
             }
-
-            if (doctorHasAppointmentInTheTime) {
-                return ResponseEntity.status(409).body("The doctor already has a appointment in this time");
-            }
-
 
         }
         var patient = patientRepository.getReferenceById(data.patientId());
@@ -83,10 +78,13 @@ public class AppointmentController {
         boolean patientHasAppointmentInTheSameDay = DateTimeUtil.patientHasAppointmentInTheSameDay(patientAppointments,
                 appointmentDateTime);
 
-        if (patientHasAppointmentInTheSameDay) return ResponseEntity.status(409).body("The same patient can't reserve the two or more appointments in this day");
-
-        repository.save(new Appointment(patient, doctor, data.date()));
-        return ResponseEntity.status(HttpStatus.CREATED).body("");
+        if (patientHasAppointmentInTheSameDay) {
+            throw new PatientBookTwoAppointmentsInTheSameDayException();
+        }
+        var appointment = new Appointment(patient, doctor, data.date());
+        repository.save(appointment);
+        URI uri = builder.path("appointments/{id}").buildAndExpand(appointment.getId()).toUri();
+        return ResponseEntity.created(uri).body(new DetailAppointmentDto(appointment));
     }
 
     @GetMapping
@@ -94,7 +92,7 @@ public class AppointmentController {
         return repository.findAppointmentCancellationReasonNull(pageable).map(CancellationAppointmentDto::new);
     }
 
-    @PutMapping
+    @PutMapping //TODO: Change the HTPP method to PATCH
     @Transactional
     public ResponseEntity<String> cancel(@RequestBody CancellationAppointmentDto data) {
         var appointment = repository.getReferenceById(data.id());
