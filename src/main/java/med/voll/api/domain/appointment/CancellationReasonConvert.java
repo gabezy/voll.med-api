@@ -3,23 +3,17 @@ package med.voll.api.domain.appointment;
 import jakarta.persistence.AttributeConverter;
 import lombok.SneakyThrows;
 
-public class CancellationReasonConvert implements AttributeConverter<CancellationReason, String> {
-    @Override
-    public String convertToDatabaseColumn(CancellationReason cancellationReason) {
-        return cancellationReason.getMeaning();
-    }
+public class CancellationReasonConvert {
 
-    @SneakyThrows
-    @Override
-    public CancellationReason convertToEntityAttribute(String s) {
+    public static CancellationReason convertToEntityAttribute(String s) {
         if (s == null) {
             return  null;
         }
         for (CancellationReason reason : CancellationReason.values()) {
-            if(reason.getMeaning().equalsIgnoreCase(s)) {
+            if(CancellationReason.valueOf(s).equals(reason)) {
                 return reason;
             }
         }
-        throw new IllegalAccessException("Unknown CancellationReason meaning: " + s);
+        throw new RuntimeException("Unknown CancellationReason meaning: " + s);
     }
 }

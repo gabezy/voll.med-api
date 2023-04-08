@@ -4,7 +4,7 @@ import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import med.voll.api.util.ValidationUtil;
+import med.voll.api.util.RequestFiledValidationUtil;
 
 @Embeddable
 @Getter
@@ -30,25 +30,25 @@ public class Address {
     }
 
     public void update(UpdateAddressDto data) {
-        if (!ValidationUtil.isNullOrEmpty(data.logradouro())) {
+        if (!RequestFiledValidationUtil.isNullOrEmpty(data.logradouro())) {
             this.logradouro = data.logradouro();
         }
-        if (!ValidationUtil.isNullOrEmpty(data.bairro())) {
+        if (!RequestFiledValidationUtil.isNullOrEmpty(data.bairro())) {
             this.bairro = data.bairro();
         }
-        if (!ValidationUtil.isNullOrEmpty(data.cep())) {
+        if (!RequestFiledValidationUtil.isNullOrEmpty(data.cep())) {
             this.cep = data.cep();
         }
-        if (!ValidationUtil.isNullOrEmpty(data.cidade())) {
+        if (!RequestFiledValidationUtil.isNullOrEmpty(data.cidade())) {
             this.cidade = data.cidade();
         }
-        if (!ValidationUtil.isNullOrEmpty(data.uf())) {
+        if (!RequestFiledValidationUtil.isNullOrEmpty(data.uf())) {
             this.uf = data.uf();
         }
-        if (!ValidationUtil.isNullOrEmpty(data.numero())) {
+        if (!RequestFiledValidationUtil.isNullOrEmpty(data.numero())) {
             this.numero = data.numero();
         }
-        if (!ValidationUtil.isNullOrEmpty(data.complemento())) {
+        if (!RequestFiledValidationUtil.isNullOrEmpty(data.complemento())) {
             this.complemento = data.complemento();
         }
     }

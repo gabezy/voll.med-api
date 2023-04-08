@@ -35,18 +35,19 @@ public class Appointment {
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Convert(converter = CancellationReasonConvert.class)
-    @Column(name = "cancellation_reason", nullable = true)
-    private CancellationReason cancellationReason;
+//    @Convert(converter = CancellationReasonConvert.class)
+    @Column(name = "cancellation_reason")
+    private String cancellationReason;
 
 
     public Appointment(Patient patient, Doctor doctor ,String date ) {
         this.patient = patient;
         this.doctor = doctor;
         this.date = LocalDateTime.parse(date);
+        this.cancellationReason = null;
     }
 
-    public void cancel(CancellationReason cancellationReason) {
+    public void cancel(String cancellationReason) {
         this.cancellationReason = cancellationReason;
     }
 

@@ -3,6 +3,7 @@ package med.voll.api.controller;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import med.voll.api.domain.user.AuthenticateDto;
+import med.voll.api.domain.user.DetailUserDto;
 import med.voll.api.domain.user.User;
 import med.voll.api.domain.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,11 @@ public class UserController {
 
     @Transactional
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody @Valid AuthenticateDto data, UriComponentsBuilder builder) {
+    public ResponseEntity<DetailUserDto> register(@RequestBody @Valid AuthenticateDto data, UriComponentsBuilder builder) {
         var user = new User(data);
         repository.save(user);
         URI uri = builder.path("/user/{id}").buildAndExpand(user.getId()).toUri();
-        // TODO: Generate and return the JWT
-
-        return ResponseEntity.created(uri).build();
+        return ResponseEntity.created(uri).body(new DetailUserDto(user));
     }
 
 }

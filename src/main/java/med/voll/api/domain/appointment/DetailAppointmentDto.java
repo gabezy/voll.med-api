@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record DetailAppointmentDto(
         String id, String patientId, String doctorId,
-        LocalDateTime date, CancellationReason cancellationReason
+        LocalDateTime date, String cancellationReason
 ) {
     public DetailAppointmentDto(Appointment appointment) {
         this(

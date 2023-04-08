@@ -3,7 +3,7 @@ package med.voll.api.domain.patient;
 import jakarta.persistence.*;
 import lombok.*;
 import med.voll.api.domain.address.Address;
-import med.voll.api.util.ValidationUtil;
+import med.voll.api.util.RequestFiledValidationUtil;
 
 @Entity
 @Table(name = "patients")
@@ -42,10 +42,10 @@ public class Patient {
     }
 
     public void update(UpdatePatientDto data) {
-        if (!ValidationUtil.isNullOrEmpty(data.name())) {
+        if (!RequestFiledValidationUtil.isNullOrEmpty(data.name())) {
             this.name = data.name();
         }
-        if (!ValidationUtil.isNullOrEmpty(data.phone())) {
+        if (!RequestFiledValidationUtil.isNullOrEmpty(data.phone())) {
             this.phone = data.phone();
         }
         if (data.address() != null) {

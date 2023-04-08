@@ -53,6 +53,13 @@ public class ExceptionHandler {
     public ResponseEntity<Object> handlePatientBookTwoAppointmentsInTheSameDayException() {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new PatientBookTwoAppointmentsInTheSameDayException().getMessage());
     }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(AppointmentCancellationException.class)
+    public ResponseEntity<Object> handleAppointmentCancellationException() {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new AppointmentCancellationException().getMessage());
+    }
+
+
     private record ExceptionValidationDto(String field, String message) {
         public ExceptionValidationDto(FieldError error) {
             this(error.getField(), error.getDefaultMessage());
