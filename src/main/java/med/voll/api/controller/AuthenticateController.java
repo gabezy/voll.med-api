@@ -1,7 +1,7 @@
 package med.voll.api.controller;
 
 import jakarta.validation.Valid;
-import med.voll.api.domain.user.AuthenticateDto;
+import med.voll.api.domain.user.UserDto;
 import med.voll.api.domain.user.User;
 import med.voll.api.domain.user.UserRepository;
 import med.voll.api.infra.security.TokenJWTDto;
@@ -28,7 +28,7 @@ public class AuthenticateController {
     private TokenService tokenService;
 
     @PostMapping
-    public ResponseEntity<TokenJWTDto> authenticate(@RequestBody @Valid AuthenticateDto data) {
+    public ResponseEntity<TokenJWTDto> authenticate(@RequestBody @Valid UserDto data) {
         var authenticationToken = new UsernamePasswordAuthenticationToken(data.username(), data.password()); //
         var authentication = manager.authenticate(authenticationToken); // represents the user authenticated - principal
         String tokenJWT = tokenService.generateToken((User) authentication.getPrincipal());

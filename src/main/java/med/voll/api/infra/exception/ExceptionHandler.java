@@ -59,6 +59,11 @@ public class ExceptionHandler {
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new AppointmentCancellationException().getMessage());
     }
 
+    @org.springframework.web.bind.annotation.ExceptionHandler(UnauthorizedExpection.class)
+    public ResponseEntity<Object> handleUnauthorizedException() {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new UnauthorizedExpection().getMessage());
+    }
+
 
     private record ExceptionValidationDto(String field, String message) {
         public ExceptionValidationDto(FieldError error) {

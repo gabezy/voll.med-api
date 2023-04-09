@@ -1,7 +1,8 @@
 package med.voll.api.domain.user;
 
-public record DetailUserDto(String id, String username) {
+public record DetailUserDto(String id, String username, UserRole role) {
+
     public DetailUserDto(User user) {
-        this(user.getId(), user.getUsername());
+        this(user.getId(), user.getUsername(), user.getRole());
     }
 }

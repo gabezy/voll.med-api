@@ -25,10 +25,22 @@ public class User implements UserDetails {
 
     private String username;
     private String password;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private UserRole role;
 
-    public User(AuthenticateDto data) {
+
+    public User(UserDto data) {
         this.username = data.username();
         this.password = hashPassword(data.password());
+        this.role = getDefaultRole(data.role());
+    }
+
+    private UserRole getDefaultRole(UserRole role) {
+        if (role == null) {
+            return UserRole.USER;
+        }
+        return role;
     }
 
     @Override
